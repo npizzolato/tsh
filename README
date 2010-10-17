@@ -1,0 +1,91 @@
+###############################################################################
+#
+# File:         README
+# RCS:          $Id: README,v 1.2 2009/10/13 01:25:03 jot836 Exp $
+# Description:  README file for tsh project
+# Author:       Fabian E. Bustamante
+#               Northwestern Systems Research Group
+#               Department of Computer Science
+#               Northwestern University
+# Created:      Thu Oct 14, 2004 at 08:37:34
+# Modified:     Thu Oct 14, 2004 at 09:02:07 fabianb@cs.northwestern.edu
+# Language:     N/A
+# Package:      N/A
+# Status:       Experimental (Do Not Distribute)
+#
+# (C) Copyright 2004, Northwestern University, all rights reserved.
+#
+###############################################################################
+
+What you will find here:
+
+README - what you are looking at
+
+README.api - a list of commands that you may find useful
+
+Makefile - Makefile for the whole project; remember to update your
+	team name (netid1+netid2). As in your previous project there
+	are two less-common targets you need to be aware of: test-reg
+	and handin.
+
+config.h - Project config file
+
+tsh.[hc], interpreter.[hc], io.[hc], runtime.[hc] - Some basic
+	structure for your shell project. You don't have to follow the
+	provided organization, just satisfy the specs. 
+
+tsh.1 - For a man page on your tsh. We have provided a basic
+        framework to guide your documentation.
+
+grading-guide.txt - Grading policy and general guide. It tells you
+	what we are looking for, explains how we grade your project,
+	what the test cases are and how we use them.
+
+testsuite - A directory including the test cases described in
+	grading-guide.txt, as well as the test harness.
+
+What you should do first:
+
+First thing to do now is compile the project skeleton.
+
+[fabianb@localhost tsh_skeleton]$ make
+gcc -Wall -g -D HAVE_CONFIG_H   -c -o interpreter.o interpreter.c
+gcc -Wall -g -D HAVE_CONFIG_H   -c -o io.o io.c
+gcc -Wall -g -D HAVE_CONFIG_H   -c -o runtime.o runtime.c
+gcc -Wall -g -D HAVE_CONFIG_H   -c -o tsh.o tsh.c
+gcc -o tsh interpreter.o io.o runtime.o tsh.o
+
+Among other things you should now have the executable 'tsh'. Go ahead
+and run it
+
+[fabianb@localhost tsh_skeleton]$ ./tsh
+exit
+
+All it understands for now is 'exit', not very interesting but
+something to get started. 
+
+Just before getting into the serious work, try making the handin
+
+[fabianb@localhost tsh_skeleton]$ make handin
+rm -f *.o *~
+rm -f  myteam-1-tsh.tar.gz
+tar cvf myteam-1-tsh.tar config.h interpreter.c  interpreter.h  io.c  io.h  Makefile  tsh.1  tsh.c  tsh.h  README  runtime.c  runtime.h
+config.h
+interpreter.c
+interpreter.h
+io.c
+io.h
+Makefile
+tsh.1
+tsh.c
+tsh.h
+README
+runtime.c
+runtime.h
+gzip myteam-1-tsh.tar
+
+This would leave a tar-gzip ball (which name will start with your
+team's name) in the same directory. This is what you need to submit to
+us when ready.
+
+Good luck
