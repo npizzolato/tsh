@@ -145,7 +145,7 @@ int search_single_path(char* cmd,char* path, char** return_path){
 	if(file_stat(full_path)){
 			*return_path = full_path;
 	}
-	
+	free(full_path);	
 	return 0;
 }
 void
