@@ -61,7 +61,7 @@
  *    Output: void
  ***********************************************************************/
 EXTERN void
-Interpret(char*);
+Interpret(char*,char*);
 
 /************External Declaration*****************************************/
 

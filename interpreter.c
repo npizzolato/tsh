@@ -47,7 +47,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "string.h"
-
+#include <sys/types.h>
+#include <linux/stat.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 /************Private include**********************************************/
 #include "interpreter.h"
 #include "io.h"
@@ -77,6 +82,126 @@ void
 freeCommand(commandT* cmd);
 
 /**************Implementation***********************************************/
+int get_path(char* path_list, int* index,char* search_path){
+	int start,i;
+	i = *index;
+	for(start = i;path_list[i] && path_list[i] !=':';i++){
+	}
+	int len = i-start;
+	strncpy(search_path,path_list+start,len);
+	search_path[len] = '\0';
+	i++;
+	return i-start;
+}
+
+int
+file_stat (char const* name)
+{
+  struct stat finfo;
+  //get current user information
+  uid_t uid = geteuid();
+  gid_t gid = getegid();
+  //lets do this the easier way
+  int usr = 0;
+  int grp = 0;
+
+
+  //stat returns -1 on error
+  if(stat(name,&finfo)<0){
+      return 0;
+  }
+  //compare user information to file info
+  if(finfo.st_uid == uid){
+    usr = 1;
+  }
+  if(finfo.st_gid == gid){
+      grp = 1;
+  }
+  //if the user has permissions, the group has permissions, or everyone has permiossons set exec
+  if( (usr && (finfo.st_mode&S_IXUSR && finfo.st_mode&S_IRUSR)) ||
+       (grp && (finfo.st_mode&S_IXGRP && finfo.st_mode&S_IRGRP)) ||
+       (finfo.st_mode&S_IXOTH && finfo.st_mode&S_IROTH))
+  {
+  		return 1;    
+	}
+  
+
+  return 0;
+}
+int search_single_path(char* cmd,char* path, char** return_path){
+	char* full_path;
+	int cmd_len = strlen(cmd);
+	if(path){
+			int path_len = strlen(path);
+			full_path = (char *) malloc(2+path_len + cmd_len);	
+			strcpy(full_path,path);	
+			full_path[path_len] = '/';
+			full_path[path_len+1] = '\0';
+			strcat(full_path,cmd);
+	}else{
+			full_path = (char *)malloc(2+cmd_len);
+			strcpy(full_path,cmd);
+	}
+	if(file_stat(full_path)){
+			*return_path = full_path;
+	}
+	
+	return 0;
+}
+void
+search_total_path(char* cmd,char* path_list,char** return_path){
+		int i,len,offset=0,found=0;
+
+		len = strlen(path_list);	
+		if(cmd){	
+		if(cmd && (cmd[0] == '/'  || cmd[0] == '~' || (sizeof(cmd) > 1 && cmd[0] == '.' &&  cmd[1] == '/')) ){
+				printf("getting absolute path");
+				if(cmd[0] == '/'){
+						search_single_path(cmd,NULL,return_path);
+				}else if(cmd[0] == '~'){
+					char* home_name = malloc(256);
+					strcpy(home_name,getenv("HOME"));
+					char* path = malloc(2+strlen(home_name) + strlen(cmd));		
+					strcpy(path,home_name);			
+					strcat(path,cmd+1);
+					printf("\nPATH: %s\n",path);
+					search_single_path(path,NULL,return_path);
+					free(home_name);
+					free(path);
+				}else if(cmd[0] == '.'){
+					char* path_name = malloc(256);
+					if(!getcwd(path_name,256)){
+						free(path_name);
+						path_name = malloc(512);
+						if(!getcwd(path_name,512)){
+								printf("mad errorz\n");
+						}
+					}
+					char* path = malloc(2+strlen(path_name) + strlen(cmd));		
+					strcpy(path,path_name);			
+					strcat(path,cmd+1);
+					search_single_path(path,NULL,return_path);
+					free(path);
+					free(path_name);	
+				}
+		
+		}else{
+				for(i=0;i<len && !found;i+=offset){
+							
+					char* search_path = malloc(256);
+					offset = get_path(path_list, &i,search_path);
+					found = search_single_path(cmd,search_path,return_path);
+					free(search_path);
+				}
+		}
+		}
+}
+
+char* 
+find_command(char* cmd, char* path_list){
+	//search_total_path(cmd,path_list);
+	return NULL;	
+}
 
 
 /*
@@ -85,23 +210,37 @@ freeCommand(commandT* cmd);
  * arguments:
  *   char *cmdLine: pointer to the command line string
  *
- * returns: none
+ * returns: explicit path to executable
  *
  * This is the high-level function called by tsh's main to interpret a
  * command line.
  */
-void
-Interpret(char* cmdLine)
-{
-  int i = 0;
-  commandT* cmd = getCommand(cmdLine);
 
+void
+Interpret(char* cmdLine, char* path_list)
+{
+  int i = 0,pid=0,x;
+  commandT* cmd = getCommand(cmdLine);
+	cmd->name = NULL;
   printf("argc: %d\n", cmd->argc);
   for (i = 0; cmd->argv[i] != 0; i++)
     {
       printf("#%d|%s|\n", i, cmd->argv[i]);
     }
   
+	search_total_path(cmd->argv[0],path_list,&(cmd->name));
+	if((cmd->name)!=NULL){
+			if( (pid=fork()) ){
+					printf("Child process: %d\n",pid);
+					wait(&x);
+			}else{
+					if(execv(cmd->name,cmd->argv)<0){
+						printf("this failed y'all\n");
+					}
+			}
+	}else{
+		printf("%s: command not found\n",cmd->argv[0]);
+	}
   freeCommand(cmd);
 } /* Interpret */
 

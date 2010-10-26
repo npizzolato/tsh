@@ -13,6 +13,7 @@
 /************System include***********************************************/
 #include <stdlib.h>
 #include <signal.h>
+#include <stdio.h>
 #include <string.h>
 
 /************Private include**********************************************/
@@ -57,6 +58,8 @@ main(int argc, char *argv[])
 {
   /* Initialize command buffer */
   char* cmdLine = malloc(sizeof(char*) * BUFSIZE);
+	/*Get PATH variable*/
+	char* path_list = getenv("PATH");
 
   /* shell initialization */
   if (signal(SIGINT, sig) == SIG_ERR)
@@ -67,6 +70,8 @@ main(int argc, char *argv[])
   while (!forceExit) /* repeat forever */
     {
       /* read command line */
+
+			printf("tsh> ");
       getCommandLine(&cmdLine, BUFSIZE);
 
       /* checks the status of background jobs */
@@ -74,14 +79,16 @@ main(int argc, char *argv[])
 
       /* interpret command and line
        * includes executing of commands */
-      Interpret(cmdLine);
 
-      if (strcmp(cmdLine, "exit") == 0)
+      if(strcmp(cmdLine, "exit") == 0){
         forceExit = TRUE;
-    }
-
+	    }else{
+      	Interpret(cmdLine,path_list);
+			}
+		}
   /* shell termination */
-  free(cmdLine);
+  	free(cmdLine);
+	
   return 0;
 } /* main */
 
