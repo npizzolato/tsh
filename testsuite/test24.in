@@ -1,0 +1,5 @@
+ls test.5
+SLEEP 1
+INT
+pwd
+exit

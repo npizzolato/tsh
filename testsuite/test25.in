@@ -1,0 +1,15 @@
+SLEEP 1
+TSTP
+SLEEP 1
+TSTP
+SLEEP 1
+ls test.4
+SLEEP 1
+INT
+SLEEP 1
+TSTP
+SLEEP 1
+INT
+SLEEP 1
+ls -l test.5
+exit

@@ -1,0 +1,7 @@
+bash -c "sleep 1; echo hello1;" &
+bash -c "sleep 3; echo hello2;" &
+jobs
+fg 2
+echo hello3 
+sleep 3
+exit

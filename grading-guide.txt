@@ -1,0 +1,75 @@
+Project 2: tsh - a tiny shell
+
+Grading guide
+
+Starting with 100 points, the following are 'discounts'.
+
+-----------------------------------------------------------
+Item                                     Discount 
+                                         points
+-----------------------------------------------------------
+ 1.(No) documentation, (No) man page 		          
+   (No) self-documented & commented code  10
+ 2.It doesn't compile			 100
+ 3.Compilation warning messages		   2 per
+ 4.Test cases				   3 per (30 cases)
+ 5.Memory leaks				   5 per
+ 6.Memory leak warnings 		   1 per
+-----------------------------------------------------------
+
+Test Cases: 
+
+We will use the following test cases (and the associated test suite)
+to evaluate and grade your project.  All test cases end with the
+"exit" command.
+
+1) just exit
+2) single command execution
+3) multiple commands, absolute and in PATH
+4) pwd
+5) multiple commands with more than one argument
+6) cd and pwd
+7) file that does not exist
+8) multiple commands with more than one argument
+9) cd and pwd
+10) background job
+11) multiple background jobs, and the jobs command
+12) background and foreground jobs
+13) multiple background jobs, and the jobs command
+14) background and foreground jobs
+15) multiple background jobs, and the jobs command
+16) background jobs and fg command
+17) background jobs, fg command, then foreground jobs
+18) ctrl-c signal
+19) background and foreground jobs, ctrl-c signal
+20) background and foreground jobs, ctrl-z signal, fg command
+21) background and foreground jobs, ctrl-z signal, bg command
+22) background job, fg command, ctrl-z, fg command
+23) ctrl-z, bg and fg commands on the same job
+24) ctrl-c signal
+25) ctrl-c and ctrl-z handled by the shell
+26) ctrl-z, fg and bg commands to multiple jobs
+27) ctrl-c handled by the shell
+28) single set of pipes
+29) single set of pipes
+30) single set of pipes
+
+For extra credit (total 20 points):
+
+There are 4 extra credit test cases, worth 5 points each.
+
+31) multiple pipes
+32) multiple pipes
+33) redirection
+34) redirection, < and > on the same command line
+
+Using the sdriver.pl driver script:
+
+To automatically test your project, we use the testsuite/sdriver.pl
+script to send signals to your shell.  As described in the handout,
+you can run the driver from the testsuite directory:
+
+./sdriver.pl -t testXX.in -s .././tsh
+
+To see the output of the reference implementation, replace ".././tsh"
+with "./tsh-ref".

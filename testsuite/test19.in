@@ -1,0 +1,6 @@
+./myspin 4 &
+./myspin 5 
+SLEEP 2
+INT
+jobs
+exit

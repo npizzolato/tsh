@@ -1,0 +1,10 @@
+./myspin 4 &
+SLEEP 1
+fg 1
+SLEEP 1
+TSTP
+SLEEP 1
+jobs
+fg 1
+jobs
+exit

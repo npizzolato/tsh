@@ -1,0 +1,6 @@
+echo "hi1"
+/bin/echo "hi2"
+whoami
+which whoami
+whatis whoami
+exit

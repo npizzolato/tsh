@@ -1,0 +1,4 @@
+ls -l | grep test
+ls -l | grep 2
+ls -l | wc -l
+exit

@@ -1,0 +1,6 @@
+echo start
+./myspin 10
+SLEEP 2
+INT
+echo end 
+exit

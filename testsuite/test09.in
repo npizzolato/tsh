@@ -1,0 +1,16 @@
+mkdir -p dir21
+cd dir21
+mkdir -p dir22
+cd dir22
+mkdir -p dir23
+cd dir23
+mkdir -p dir24
+cd dir24
+cd ../../..
+ls
+cd ..
+ls
+ls test.3 test.4
+cd
+pwd
+exit

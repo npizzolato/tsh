@@ -1,0 +1,5 @@
+echo Spinning 1 sec
+./myspin 1 &
+SLEEP 2
+echo After
+exit

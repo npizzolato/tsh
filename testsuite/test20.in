@@ -1,0 +1,9 @@
+./myspin 4 &
+./myspin 5 
+SLEEP 2
+TSTP
+SLEEP 1
+jobs
+fg 2
+SLEEP 4
+exit

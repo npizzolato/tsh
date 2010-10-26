@@ -1,0 +1,8 @@
+mkdir -p dir1
+mkdir -p dir2
+cd dir1
+mkdir -p dir11
+ls -a
+cd ../..
+pwd
+exit

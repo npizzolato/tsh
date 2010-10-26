@@ -1,0 +1,11 @@
+bash -c "sleep 4; echo hello1;"
+SLEEP 1
+TSTP
+SLEEP 1
+jobs
+bg 1
+jobs
+fg 1
+echo hello2 
+sleep 4
+exit

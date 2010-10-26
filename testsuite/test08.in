@@ -1,0 +1,9 @@
+ls test.4 test.5
+ls test.3
+which bash
+ls -l test2.txt
+which diff
+echo hello
+which which
+ls -F test2.txt
+exit
