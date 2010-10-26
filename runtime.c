@@ -134,7 +134,7 @@ RunCmdFork(commandT* cmd, bool to_fork)
 	int i,x,pid=0,readin = 0, readout = 0;
   for (i = 0; cmd->argv[i] != 0; i++)
     {
-      printf("#%d|%s|\n", i, cmd->argv[i]);
+      //printf("#%d|%s|\n", i, cmd->argv[i]);
 			if( *(cmd->argv[i]) == '>'){
 					readin = i;
 			}else if(*(cmd->argv[i]) == '<'){
@@ -143,7 +143,6 @@ RunCmdFork(commandT* cmd, bool to_fork)
     }
 
 		if( (pid=fork()) ){
-				printf("Child process: %d\n",pid);
 				wait(&x);
 		}else{
 			if(readin){
