@@ -282,7 +282,6 @@ int
 IsBuiltIn(char* cmd)
 {
 	if( (strcmp(cmd,"cd") == 0) || (strcmp(cmd,"fg") == 0) || (strcmp(cmd,"jobs") == 0) || (strcmp(cmd,"bg") == 0) ){
-			printf("THIS IS CD\n");
 			return TRUE;
 	}
   return FALSE;
@@ -304,10 +303,9 @@ RunBuiltInCmd(commandT* cmd)
 {
 	if(strcmp("cd",cmd->argv[0]) == 0){
 			if(chdir(cmd->argv[1]) < 0){
-				perror("CHDIR Failed");	
+				perror("cd error");	
 			}
 	}
-
 } /* RunBuiltInCmd */
 
 
