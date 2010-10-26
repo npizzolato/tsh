@@ -53,6 +53,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include<fcntl.h>
 /************Private include**********************************************/
 #include "interpreter.h"
 #include "io.h"
@@ -218,30 +219,17 @@ find_command(char* cmd, char* path_list){
 void
 Interpret(char* cmdLine, char* path_list)
 {
-  int i = 0,pid=0,x;
 	commandT* cmd = getCommand(cmdLine);
 	cmd->name = NULL;
-  printf("argc: %d\n", cmd->argc);
-  for (i = 0; cmd->argv[i] != 0; i++)
-    {
-      printf("#%d|%s|\n", i, cmd->argv[i]);
-    }
+  if (cmd->argc <= 0)
+    return;
  	if(IsBuiltIn(cmd->argv[0])){
 		RunBuiltInCmd(cmd);
-
 	}else{
+	
 		search_total_path(cmd->argv[0],path_list,&(cmd->name));
 		if((cmd->name)!=NULL){
-			//RunCmd(cmd);
-			if( (pid=fork()) ){
-					printf("Child process: %d\n",pid);
-					wait(&x);
-			}else{
-					if(execv(cmd->name,cmd->argv)<0){
-						printf("this failed y'all\n");
-						perror("zis is ze problem:");
-					}
-			}
+			RunCmd(cmd);
 		}else{
 			printf("%s: command not found\n",cmd->argv[0]);
 		}

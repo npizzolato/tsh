@@ -129,18 +129,39 @@ RunCmd(commandT* cmd)
  * depending on cmd->argv[0].
  */
 void
-RunCmdFork(commandT* cmd, bool fork)
+RunCmdFork(commandT* cmd, bool to_fork)
 {
-  if (cmd->argc <= 0)
-    return;
-  if (IsBuiltIn(cmd->argv[0]))
+	int i,x,pid=0,readin = 0, readout = 0;
+  for (i = 0; cmd->argv[i] != 0; i++)
     {
-      RunBuiltInCmd(cmd);
+      printf("#%d|%s|\n", i, cmd->argv[i]);
+			if( *(cmd->argv[i]) == '>'){
+					readin = i;
+			}else if(*(cmd->argv[i]) == '<'){
+					readout = i;
+			}
     }
-  else
-    {
-      RunExternalCmd(cmd, fork);
-    }
+
+		if( (pid=fork()) ){
+				printf("Child process: %d\n",pid);
+				wait(&x);
+		}else{
+			if(readin){
+				int f = open(cmd->argv[readin+1],O_CREAT|O_RDWR,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
+				close(1);
+				dup(f);
+				cmd->argv[readin] = NULL;
+			}else if(readout){
+				int f = open(cmd->argv[readout+1],O_RDWR);
+				close(0);
+				dup(f);
+				cmd->argv[readout] = NULL;
+			}
+				if(execv(cmd->name,cmd->argv)<0){
+					printf("this failed y'all\n");
+					perror("zis is ze problem:");
+				}
+		}
 } /* RunCmdFork */
 
 
