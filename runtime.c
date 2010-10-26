@@ -93,11 +93,7 @@ ResolveExternalCmd(commandT*);
 static void
 Exec(commandT*, bool);
 /* runs a builtin command */
-static void
-RunBuiltInCmd(commandT*);
 /* checks whether a command is a builtin command */
-static bool
-IsBuiltIn(char*);
 /************External Declaration*****************************************/
 
 /**************Implementation***********************************************/
@@ -282,9 +278,13 @@ Exec(commandT* cmd, bool forceFork)
  * Checks whether the given string corresponds to a supported built-in
  * command.
  */
-static bool
+int
 IsBuiltIn(char* cmd)
 {
+	if( (strcmp(cmd,"cd") == 0) || (strcmp(cmd,"fg") == 0) || (strcmp(cmd,"jobs") == 0) || (strcmp(cmd,"bg") == 0) ){
+			printf("THIS IS CD\n");
+			return TRUE;
+	}
   return FALSE;
 } /* IsBuiltIn */
 
@@ -299,9 +299,15 @@ IsBuiltIn(char* cmd)
  *
  * Runs a built-in command.
  */
-static void
+void
 RunBuiltInCmd(commandT* cmd)
 {
+	if(strcmp("cd",cmd->argv[0]) == 0){
+			if(chdir(cmd->argv[1]) < 0){
+				perror("CHDIR Failed");	
+			}
+	}
+
 } /* RunBuiltInCmd */
 
 

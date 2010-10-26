@@ -145,9 +145,9 @@ int search_single_path(char* cmd,char* path, char** return_path){
 	if(file_stat(full_path)){
 			*return_path = full_path;
 	}
-	free(full_path);	
 	return 0;
 }
+
 void
 search_total_path(char* cmd,char* path_list,char** return_path){
 		int i,len,offset=0,found=0;
@@ -164,7 +164,6 @@ search_total_path(char* cmd,char* path_list,char** return_path){
 					char* path = malloc(2+strlen(home_name) + strlen(cmd));		
 					strcpy(path,home_name);			
 					strcat(path,cmd+1);
-					printf("\nPATH: %s\n",path);
 					search_single_path(path,NULL,return_path);
 					free(home_name);
 					free(path);
@@ -220,26 +219,32 @@ void
 Interpret(char* cmdLine, char* path_list)
 {
   int i = 0,pid=0,x;
-  commandT* cmd = getCommand(cmdLine);
+	commandT* cmd = getCommand(cmdLine);
 	cmd->name = NULL;
   printf("argc: %d\n", cmd->argc);
   for (i = 0; cmd->argv[i] != 0; i++)
     {
       printf("#%d|%s|\n", i, cmd->argv[i]);
     }
-  
-	search_total_path(cmd->argv[0],path_list,&(cmd->name));
-	if((cmd->name)!=NULL){
+ 	if(IsBuiltIn(cmd->argv[0])){
+		RunBuiltInCmd(cmd);
+
+	}else{
+		search_total_path(cmd->argv[0],path_list,&(cmd->name));
+		if((cmd->name)!=NULL){
+			//RunCmd(cmd);
 			if( (pid=fork()) ){
 					printf("Child process: %d\n",pid);
 					wait(&x);
 			}else{
 					if(execv(cmd->name,cmd->argv)<0){
 						printf("this failed y'all\n");
+						perror("zis is ze problem:");
 					}
 			}
-	}else{
-		printf("%s: command not found\n",cmd->argv[0]);
+		}else{
+			printf("%s: command not found\n",cmd->argv[0]);
+		}
 	}
   freeCommand(cmd);
 } /* Interpret */
@@ -404,7 +409,7 @@ void
 freeCommand(commandT* cmd)
 {
   int i;
-
+	free(cmd->name);
   cmd->name = 0;
   for (i = 0; cmd->argv[i] != 0; i++)
     {

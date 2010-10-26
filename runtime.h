@@ -184,6 +184,8 @@ getLogin();
 EXTERN void
 CheckJobs();
 
+int IsBuiltIn(char*);
+void RunBuiltInCmd(commandT*);
 /************External Declaration*****************************************/
 
 /**************Definition***************************************************/
