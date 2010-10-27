@@ -131,7 +131,7 @@ RunCmd(commandT* cmd)
 void
 RunCmdFork(commandT* cmd, bool to_fork)
 {
-	int i,x,pid=0,readin = 0, readout = 0;
+	int i,x,pid=0,readin = 0, readout = 0,pipe = 0;
   for (i = 0; cmd->argv[i] != 0; i++)
     {
       //printf("#%d|%s|\n", i, cmd->argv[i]);
@@ -139,9 +139,29 @@ RunCmdFork(commandT* cmd, bool to_fork)
 					readin = i;
 			}else if(*(cmd->argv[i]) == '<'){
 					readout = i;
+			}else if(*(cmd->argv[i]) == '|'){
+				printf("pipe!!!\n");
+				pipe = i;
+				cmd->argv[i+1] = NULL;
 			}
     }
+		
+		if(pipe){
+/*			cmd->argv[pipe] = NULL;
+			int A_to_B[2];
+			pipe(A_to_B);
+			if(fork() == 0){
+				close(A_to_B[0]);		
+				close(1);
+				dup(A_to_B[1]);
+				
+			}
+			if(fork() == 0){
 
+			}
+*/
+
+		}else{
 		if( (pid=fork()) ){
 				wait(&x);
 		}else{
@@ -155,12 +175,13 @@ RunCmdFork(commandT* cmd, bool to_fork)
 				close(0);
 				dup(f);
 				cmd->argv[readout] = NULL;
+			}						
+			if(execv(cmd->name,cmd->argv)<0){
+				printf("this failed y'all\n");
+				perror("zis is ze problem:");
 			}
-				if(execv(cmd->name,cmd->argv)<0){
-					printf("this failed y'all\n");
-					perror("zis is ze problem:");
-				}
 		}
+	}
 } /* RunCmdFork */
 
 
