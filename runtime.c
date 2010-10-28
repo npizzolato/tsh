@@ -233,7 +233,6 @@ RunCmdPipe(commandT* cmd1, commandT* cmd2)
 				perror("zis is ze problem:");
 			}
 	}
-	wait(&stat);
 } /* RunCmdPipe */
 
 
