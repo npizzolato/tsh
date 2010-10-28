@@ -146,7 +146,7 @@ RunCmdFork(commandT* cmd, bool to_fork)
 			}
     }
 		
-		if(pipe){
+			
 /*			cmd->argv[pipe] = NULL;
 			int A_to_B[2];
 			pipe(A_to_B);
@@ -160,8 +160,6 @@ RunCmdFork(commandT* cmd, bool to_fork)
 
 			}
 */
-
-		}else{
 		if( (pid=fork()) ){
 				wait(&x);
 		}else{
@@ -181,7 +179,6 @@ RunCmdFork(commandT* cmd, bool to_fork)
 				perror("zis is ze problem:");
 			}
 		}
-	}
 } /* RunCmdFork */
 
 
@@ -217,6 +214,7 @@ RunCmdBg(commandT* cmd)
 void
 RunCmdPipe(commandT* cmd1, commandT* cmd2)
 {
+	printf("In run cmd pipe!!!\n");
 } /* RunCmdPipe */
 
 

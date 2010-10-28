@@ -46,7 +46,8 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "string.h"
+//#include "string.h"
+#include <string.h>
 #include <sys/types.h>
 #include <linux/stat.h>
 #include <unistd.h>
@@ -156,7 +157,6 @@ search_total_path(char* cmd,char* path_list,char** return_path){
 		len = strlen(path_list);	
 		if(cmd){	
 		if(cmd && (cmd[0] == '/'  || cmd[0] == '~' || (sizeof(cmd) > 1 && cmd[0] == '.' &&  cmd[1] == '/')) ){
-				printf("getting absolute path");
 				if(cmd[0] == '/'){
 						search_single_path(cmd,NULL,return_path);
 				}else if(cmd[0] == '~'){
@@ -220,19 +220,54 @@ void
 Interpret(char* cmdLine, char* path_list)
 {
 	commandT* cmd = getCommand(cmdLine);
+	int i,to_pipe=0;
 	cmd->name = NULL;
   if (cmd->argc <= 0)
     return;
  	if(IsBuiltIn(cmd->argv[0])){
 		RunBuiltInCmd(cmd);
 	}else{
-	
+				
+  for (i = 0; cmd->argv[i] != 0; i++)
+   {
+			if(*(cmd->argv[i]) == '|'){
+				to_pipe = i;
+			}
+   }
+	 if(!to_pipe){
 		search_total_path(cmd->argv[0],path_list,&(cmd->name));
 		if((cmd->name)!=NULL){
 			RunCmd(cmd);
 		}else{
 			printf("%s: command not found\n",cmd->argv[0]);
 		}
+	 }else{
+  		commandT* cmd2 = malloc(sizeof(commandT) + sizeof(char*) * MAXARGS);
+			
+  		cmd2->argv[0] = 0;
+  		cmd2->name = 0;
+  		cmd2->argc = 0;
+			free(cmd->argv[to_pipe]);
+			cmd->argv[to_pipe] = 0;
+			search_total_path(cmd->argv[to_pipe+1],path_list,&(cmd2->name));
+			if(cmd2->name != NULL){
+				int j,p=to_pipe+1;
+				for(j=0;cmd->argv[p]!=0 || cmd->argv[p]!=NULL;j++){
+					cmd2->argv[j] = malloc(strlen(cmd->argv[p]));		
+					cmd2->argc++;
+					strcpy( cmd2->argv[j], cmd->argv[p]);	
+					p++;
+				}
+				cmd2->argv[j+1] = 0;
+				RunCmdPipe(cmd,cmd2);	
+				//MAKE SURE TO FREE COMMAND
+				freeCommand(cmd2);
+			}else{
+					printf("%s: command not found\n",cmd->argv[to_pipe+1]);
+			}
+			
+	 }
+
 	}
   freeCommand(cmd);
 } /* Interpret */
@@ -398,8 +433,7 @@ freeCommand(commandT* cmd)
 {
   int i;
 	free(cmd->name);
-  cmd->name = 0;
-  for (i = 0; cmd->argv[i] != 0; i++)
+  for (i = 0; cmd->argv[i] != 0 || cmd->argv[i] !=NULL; i++)
     {
       free(cmd->argv[i]);
       cmd->argv[i] = 0;
