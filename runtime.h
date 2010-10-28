@@ -72,7 +72,6 @@ typedef struct bgjob_l
 } bgjobL;
 
 /* the pids of the background processes */
-bgjobL *bgjobs = NULL;
 
 typedef struct Job
 {
@@ -199,6 +198,9 @@ getLogin();
  ***********************************************************************/
 EXTERN void
 CheckJobs();
+
+EXTERN void
+Push();
 
 int IsBuiltIn(char*);
 void RunBuiltInCmd(commandT*);

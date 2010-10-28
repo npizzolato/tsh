@@ -70,6 +70,7 @@
 
 #define NBUILTINCOMMANDS (sizeof BuiltInCommands / sizeof(char*))
 
+bgjobL* bgjobs = NULL;
 /************Function Prototypes******************************************/
 /* run command */
 static void
@@ -155,7 +156,6 @@ RunCmdFork(commandT* cmd, bool to_fork)
                 fgjob.pid = pid;
                 printf("fgpid = %d\n", fgjob.pid);
 				wait(&x);
-                fgjob.pid = 0;
                 printf("fgpid = %d\n", fgjob.pid);
 		}else{
 			if(readin){
@@ -298,6 +298,13 @@ static void
 Exec(commandT* cmd, bool forceFork)
 {
 } /* Exec */
+
+void Push(bgjobL* bgjobs, pid_t pid)
+{
+    bgjobL* newjob = malloc(sizeof(bgjobL));
+    newjob->next = bgjobs;
+    newjob->pid = pid;
+}
 
 
 /*

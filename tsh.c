@@ -33,6 +33,8 @@
 
 /************Global Variables*********************************************/
 
+extern bgjobL bgjobs;
+
 /************Function Prototypes******************************************/
 /* handles SIGINT and SIGSTOP signals */
 static void
@@ -105,4 +107,17 @@ main(int argc, char *argv[])
 static void
 sig(int signo)
 {
+    if (signo == SIGINT) {
+        if (fgjob.pid) {
+            kill(fgjob.pid, signo);
+            fgjob.pid = 0;
+        }
+    }
+    if (signo == SIGTSTP) {
+        if (fgjob.pid) {
+            kill(fgjob.pid, signo);
+            Push(bgjobs, fgjob.pid);
+            fgjob.pid = 0;
+        }
+    }
 } /* sig */
