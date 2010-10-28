@@ -65,6 +65,22 @@ typedef struct command_t
 
 /************Global Variables*********************************************/
 
+typedef struct bgjob_l
+{
+  pid_t pid;
+  struct bgjob_l* next;
+} bgjobL;
+
+/* the pids of the background processes */
+bgjobL *bgjobs = NULL;
+
+typedef struct Job
+{
+    pid_t pid;
+} job;
+
+job fgjob;
+
 /***********************************************************************
  *  Title: Force a program exit
  * ---------------------------------------------------------------------

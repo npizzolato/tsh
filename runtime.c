@@ -70,15 +70,6 @@
 
 #define NBUILTINCOMMANDS (sizeof BuiltInCommands / sizeof(char*))
 
-typedef struct bgjob_l
-{
-  pid_t pid;
-  struct bgjob_l* next;
-} bgjobL;
-
-/* the pids of the background processes */
-bgjobL *bgjobs = NULL;
-
 /************Function Prototypes******************************************/
 /* run command */
 static void
@@ -143,7 +134,11 @@ RunCmdFork(commandT* cmd, bool to_fork)
     }
 
 		if( (pid=fork()) ){
+                fgjob.pid = pid;
+                printf("fgpid = %d\n", fgjob.pid);
 				wait(&x);
+                fgjob.pid = 0;
+                printf("fgpid = %d\n", fgjob.pid);
 		}else{
 			if(readin){
 				int f = open(cmd->argv[readin+1],O_CREAT|O_RDWR,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
