@@ -243,12 +243,12 @@ Interpret(char* cmdLine, char* path_list)
 		}
 	 }else{
   		commandT* cmd2 = malloc(sizeof(commandT) + sizeof(char*) * MAXARGS);
-			
   		cmd2->argv[0] = 0;
   		cmd2->name = 0;
   		cmd2->argc = 0;
 			free(cmd->argv[to_pipe]);
 			cmd->argv[to_pipe] = 0;
+			search_total_path(cmd->argv[0],path_list,&(cmd->name));
 			search_total_path(cmd->argv[to_pipe+1],path_list,&(cmd2->name));
 			if(cmd2->name != NULL){
 				int j,p=to_pipe+1;
@@ -436,7 +436,6 @@ freeCommand(commandT* cmd)
 {
   int i;
 	free(cmd->name);
-	printf("cmd->argc %d\n",cmd->argc);
   for (i = 0; i<cmd->argc && cmd->argv[i] != 0 && cmd->argv[i] !=NULL; i++)
     {
       free(cmd->argv[i]);
