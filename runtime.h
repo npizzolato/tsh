@@ -65,6 +65,21 @@ typedef struct command_t
 
 /************Global Variables*********************************************/
 
+typedef struct bgjob_l
+{
+  pid_t pid;
+  struct bgjob_l* next;
+} bgjobL;
+
+/* the pids of the background processes */
+
+typedef struct Job
+{
+    pid_t pid;
+} job;
+
+job fgjob;
+
 /***********************************************************************
  *  Title: Force a program exit
  * ---------------------------------------------------------------------
@@ -183,6 +198,9 @@ getLogin();
  ***********************************************************************/
 EXTERN void
 CheckJobs();
+
+EXTERN void
+Push();
 
 int IsBuiltIn(char*);
 void RunBuiltInCmd(commandT*);
