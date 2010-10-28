@@ -260,8 +260,9 @@ Interpret(char* cmdLine, char* path_list)
 					cmd->argv[p] = 0;
 					p++;
 				}
+
 				cmd2->argv[j+1] = 0;
-				RunCmdPipe(cmd,cmd2);	
+				RunCmdPipe(cmd,cmd2);
 				//MAKE SURE TO FREE COMMAND
 				freeCommand(cmd2);
 			}else{

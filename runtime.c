@@ -213,7 +213,33 @@ RunCmdBg(commandT* cmd)
  */
 void
 RunCmdPipe(commandT* cmd1, commandT* cmd2)
-{
+{	
+	int stat;
+	int cmd1_to_cmd2[2],cmd2_to_cmd1[2];	
+	pipe(cmd1_to_cmd2);
+	pipe(cmd2_to_cmd1);
+	
+	if(fork() == 0){
+		close(cmd1_to_cmd2[0]);
+		close(1);				
+		dup(cmd1_to_cmd2[1]);
+		if(execv(cmd1->name,cmd1->argv)<0){
+			printf("this failed y'all\n");
+			perror("zis is ze problem:");
+		}
+	}
+	if(fork() == 0){
+			close(cmd2_to_cmd1[1]);
+			close(0);
+			dup(cmd2_to_cmd1[1]);
+			if(execv(cmd1->name,cmd1->argv)<0){
+				printf("this failed y'all\n");
+				perror("zis is ze problem:");
+			}
+	}
+	wait(&stat);
+	wait(&stat);
+
 	printf("In run cmd pipe!!!\n");
 } /* RunCmdPipe */
 
