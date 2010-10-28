@@ -15,6 +15,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/wait.h>
 
 /************Private include**********************************************/
 #include "tsh.h"
@@ -34,6 +35,7 @@
 /************Global Variables*********************************************/
 
 extern bgjobL bgjobs;
+extern int fgrun;
 
 /************Function Prototypes******************************************/
 /* handles SIGINT and SIGSTOP signals */
@@ -68,6 +70,8 @@ main(int argc, char *argv[])
     PrintPError("SIGINT");
   if (signal(SIGTSTP, sig) == SIG_ERR)
     PrintPError("SIGTSTP");
+  if (signal(SIGCHLD, sig) == SIG_ERR)
+      PrintPError("SIGCHLD");
 
   while (!forceExit) /* repeat forever */
     {
@@ -109,15 +113,22 @@ sig(int signo)
 {
     if (signo == SIGINT) {
         if (fgjob.pid) {
-            kill(fgjob.pid, signo);
+            kill(-fgjob.pid, signo);
             fgjob.pid = 0;
         }
     }
     if (signo == SIGTSTP) {
         if (fgjob.pid) {
-            kill(fgjob.pid, signo);
+            kill(-fgjob.pid, signo);
             Push(bgjobs, fgjob.pid);
             fgjob.pid = 0;
         }
     }
+    if (signo == SIGCHLD) {
+        pid_t child = waitpid(-1, NULL, 0);
+        if (child == fgjob.pid) {
+            fgrun = 0;
+        }
+    }
+
 } /* sig */

@@ -71,6 +71,8 @@
 #define NBUILTINCOMMANDS (sizeof BuiltInCommands / sizeof(char*))
 
 bgjobL* bgjobs = NULL;
+int fgrun = 0;
+
 /************Function Prototypes******************************************/
 /* run command */
 static void
@@ -154,8 +156,11 @@ RunCmdFork(commandT* cmd, bool to_fork)
 */
 		if( (pid=fork()) ){
                 fgjob.pid = pid;
+                fgrun = pid;
                 printf("fgpid = %d\n", fgjob.pid);
-				wait(&x);
+                while (fgrun == fgjob.pid) {
+                    sleep(1);
+                }
                 printf("fgpid = %d\n", fgjob.pid);
 		}else{
 			if(readin){
@@ -169,6 +174,7 @@ RunCmdFork(commandT* cmd, bool to_fork)
 				dup(f);
 				cmd->argv[readout] = NULL;
 			}						
+            setpgid(0,0);
 			if(execv(cmd->name,cmd->argv)<0){
 				printf("this failed y'all\n");
 				perror("zis is ze problem:");
