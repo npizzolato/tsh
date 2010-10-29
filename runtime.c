@@ -233,6 +233,7 @@ RunCmdPipe(commandT* cmd1, commandT* cmd2)
 			close(cmd1_to_cmd2[0]);
 			close(cmd1_to_cmd2[1]);
       fgjob.pid = pid;
+			fgjob.pipes = 1;
       fgrun = pid;
       while (fgrun == fgjob.pid) {
           sleep(1);
