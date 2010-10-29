@@ -204,7 +204,6 @@ RunCmdBg(commandT* cmd)
 
 		bg_js[name_offset] = '&';
 		bg_js[++name_offset] = '\0';
-		printf("%s \n",bg_js);
 		Push(pid,bg_js);
 
 	}else{
