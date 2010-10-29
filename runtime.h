@@ -210,6 +210,7 @@ RemoveBgProcess(pid_t);
 
 int IsBuiltIn(char*);
 void RunBuiltInCmd(commandT*);
+pid_t GetPid(int);
 /************External Declaration*****************************************/
 
 /**************Definition***************************************************/
