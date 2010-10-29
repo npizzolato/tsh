@@ -211,7 +211,9 @@ RemoveBgProcess(pid_t);
 
 int IsBuiltIn(char*);
 void RunBuiltInCmd(commandT*);
-pid_t GetPid(int);
+bgjobL* GetJob(int);
+void RunFg(bgjobL*);
+bgjobL* JobFromPid(pid_t);
 /************External Declaration*****************************************/
 
 /**************Definition***************************************************/
