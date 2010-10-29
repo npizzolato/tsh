@@ -125,41 +125,47 @@ RunCmd(commandT* cmd)
 void
 RunCmdFork(commandT* cmd, bool to_fork)
 {
-	int i,pid=0,readin = 0, readout = 0;
-  for (i = 0; cmd->argv[i] != 0; i++)
+    int i,pid=0,readin = 0, readout = 0;
+    sigset_t sigset;
+    for (i = 0; cmd->argv[i] != 0; i++)
     {
-			if( *(cmd->argv[i]) == '>'){
-					readin = i;
-			}else if(*(cmd->argv[i]) == '<'){
-					readout = i;
-			}			
+		if( *(cmd->argv[i]) == '>'){
+				readin = i;
+		}else if(*(cmd->argv[i]) == '<'){
+				readout = i;
+		}			
     }
-		if( (pid=fork()) ){
-       fgjob.pid = pid;
-       fgrun = pid;
-       printf("fgpid = %d\n", fgjob.pid);
-				while (fgrun == fgjob.pid) {
+    sigemptyset(&sigset);
+    sigaddset(&sigset, SIGCHLD);
+    sigprocmask(SIG_BLOCK, &sigset, NULL);
+	if( (pid=fork()) ){
+        fgjob.pid = pid;
+        fgrun = pid;
+        printf("fgpid = %d\n", fgjob.pid);
+        sigprocmask(SIG_UNBLOCK, &sigset, NULL);
+		while (fgrun == fgjob.pid) {
        		sleep(1);
-     	 }
-     	printf("fgpid = %d\n", fgjob.pid);
-		}else{
-			if(readin){
-				int f = open(cmd->argv[readin+1],O_CREAT|O_RDWR,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
-				close(1);
-				dup(f);
-				cmd->argv[readin] = NULL;
-			}else if(readout){
-				int f = open(cmd->argv[readout+1],O_RDWR);
-				close(0);
-				dup(f);
-				cmd->argv[readout] = NULL;
-			}						
-            setpgid(0,0);
-			if(execv(cmd->name,cmd->argv)<0){
-				printf("this failed y'all\n");
-				perror("zis is ze problem:");
-			}
+     	}
+    printf("fgpid = %d\n", fgjob.pid);
+	}else{
+		if(readin){
+			int f = open(cmd->argv[readin+1],O_CREAT|O_RDWR,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
+			close(1);
+			dup(f);
+			cmd->argv[readin] = NULL;
+		}else if(readout){
+			int f = open(cmd->argv[readout+1],O_RDWR);
+			close(0);
+			dup(f);
+			cmd->argv[readout] = NULL;
+		}						
+        setpgid(0,0);
+        sigprocmask(SIG_UNBLOCK, &sigset, NULL);
+		if(execv(cmd->name,cmd->argv)<0){
+			printf("this failed y'all\n");
+			perror("zis is ze problem:");
 		}
+	}
 } /* RunCmdFork */
 
 
