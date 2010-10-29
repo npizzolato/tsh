@@ -354,6 +354,8 @@ void Push(pid_t pid,char* js)
     newjob->next = bgjobs;
     newjob->pid = pid;
 		newjob->bg_js = js;
+		bgjobs = newjob;
+		printf("*****pushing now\n");
 }
 
 void Pop(bgjobL* popped_job){
@@ -370,9 +372,12 @@ void Pop(bgjobL* popped_job){
 
 void RemoveBgProcess(pid_t pid)
 {
-    if (!bgjobs)
+    if (!bgjobs){
         perror("No background processes.");
+				return;
+		}
     if (bgjobs->next == NULL) {
+				printf("bgjobs->pid: %d",bgjobs->pid);
         if (bgjobs->pid == pid) {
             free(bgjobs);
             bgjobs = NULL;
