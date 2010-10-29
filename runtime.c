@@ -200,10 +200,10 @@ RunCmdBg(commandT* cmd)
 			sprintf(bg_js+name_offset,"%s ",cmd->argv[k]);
 			name_offset+=strlen(cmd->argv[k]);
 		}
-		name_offset++;
-		bg_js[name_offset] = '\0';
+		bg_js[++name_offset] = '&';
+		bg_js[++name_offset] = '\0';
 		printf("%s \n",bg_js);
-		Push(pid);
+		Push(pid,bg_js);
 
 	}else{
 		if(execv(cmd->name,cmd->argv)<0){
@@ -355,7 +355,6 @@ void Push(pid_t pid,char* js)
     newjob->pid = pid;
 		newjob->bg_js = js;
 		bgjobs = newjob;
-		printf("*****pushing now\n");
 }
 
 void Pop(bgjobL* popped_job){
