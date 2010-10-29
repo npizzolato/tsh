@@ -474,6 +474,7 @@ pid_t GetPid(int jid)
     bgjobL* list = bgjobs;
     if (jid < 1) {
         perror("Invalid job id.");
+        exit(-1);
     }
     while (jid != 1) {
         if (bgjobs->next) {
@@ -482,6 +483,7 @@ pid_t GetPid(int jid)
         }
         else {
             perror("Invalid job id.");
+            exit(-1);
         }
     }
     return list->pid;
