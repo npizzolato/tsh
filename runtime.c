@@ -426,10 +426,11 @@ RunBuiltInCmd(commandT* cmd)
 	}
     if (strcmp("bg", cmd->argv[0]) == 0) {
         if (cmd->argc == 1) {
-            kill(bgjobs->pid, SIGCONT);
+            if (bgjobs)
+                kill(bgjobs->pid, SIGCONT);
         }
         else {
-            int id = cmd->argv[1];
+            int id = atoi(cmd->argv[1]);
             if (id < 20) {
                 kill(GetPid(id), SIGCONT);
             }
