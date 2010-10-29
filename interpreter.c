@@ -220,7 +220,7 @@ void
 Interpret(char* cmdLine, char* path_list)
 {
 	commandT* cmd = getCommand(cmdLine);
-	int i,to_pipe=0;
+	int i,to_pipe=0,to_bg = 0;
 	cmd->name = NULL;
   if (cmd->argc <= 0)
     return;
@@ -234,10 +234,20 @@ Interpret(char* cmdLine, char* path_list)
 				to_pipe = i;
 			}
    }
+	 if(*(cmd->argv[cmd->argc-1]) == '&'){
+					to_bg = 1;
+					cmd->argv[cmd->argc-1] = 0;
+	 }
+
 	 if(!to_pipe){
 		search_total_path(cmd->argv[0],path_list,&(cmd->name));
 		if((cmd->name)!=NULL){
-			RunCmd(cmd);
+			if(to_bg){
+				RunCmdBg(cmd);
+			}
+			else{
+					RunCmd(cmd);
+			}
 		}else{
 			printf("%s: command not found\n",cmd->argv[0]);
 		}

@@ -125,43 +125,23 @@ RunCmd(commandT* cmd)
 void
 RunCmdFork(commandT* cmd, bool to_fork)
 {
-	int i,x,pid=0,readin = 0, readout = 0,pipe = 0;
+	int i,pid=0,readin = 0, readout = 0;
   for (i = 0; cmd->argv[i] != 0; i++)
     {
-      //printf("#%d|%s|\n", i, cmd->argv[i]);
 			if( *(cmd->argv[i]) == '>'){
 					readin = i;
 			}else if(*(cmd->argv[i]) == '<'){
 					readout = i;
-			}else if(*(cmd->argv[i]) == '|'){
-				printf("pipe!!!\n");
-				pipe = i;
-				cmd->argv[i+1] = NULL;
-			}
+			}			
     }
-		
-			
-/*			cmd->argv[pipe] = NULL;
-			int A_to_B[2];
-			pipe(A_to_B);
-			if(fork() == 0){
-				close(A_to_B[0]);		
-				close(1);
-				dup(A_to_B[1]);
-				
-			}
-			if(fork() == 0){
-
-			}
-*/
 		if( (pid=fork()) ){
-                fgjob.pid = pid;
-                fgrun = pid;
-                printf("fgpid = %d\n", fgjob.pid);
-                while (fgrun == fgjob.pid) {
-                    sleep(1);
-                }
-                printf("fgpid = %d\n", fgjob.pid);
+       fgjob.pid = pid;
+       fgrun = pid;
+       printf("fgpid = %d\n", fgjob.pid);
+				while (fgrun == fgjob.pid) {
+       		sleep(1);
+     	 }
+     	printf("fgpid = %d\n", fgjob.pid);
 		}else{
 			if(readin){
 				int f = open(cmd->argv[readin+1],O_CREAT|O_RDWR,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
@@ -196,6 +176,16 @@ RunCmdFork(commandT* cmd, bool to_fork)
 void
 RunCmdBg(commandT* cmd)
 {
+	pid_t pid;
+	if( (pid=fork())){
+			Push(pid);
+	}else{
+		if(execv(cmd->name,cmd->argv)<0){
+			printf("this failed y'all\n");
+			perror("zis is ze problem:");
+		}
+	}
+
   // TODO
 } /* RunCmdBg */
 
@@ -331,11 +321,21 @@ Exec(commandT* cmd, bool forceFork)
 {
 } /* Exec */
 
-void Push(bgjobL* bgjobs, pid_t pid)
+void Push(pid_t pid)
 {
     bgjobL* newjob = malloc(sizeof(bgjobL));
     newjob->next = bgjobs;
     newjob->pid = pid;
+}
+
+void Pop(bgjobL* popped_job){
+	if(bgjobs == NULL){
+		popped_job = NULL;
+	}else{
+		popped_job = bgjobs;
+		bgjobs = bgjobs->next;
+	}
+
 }
 
 
