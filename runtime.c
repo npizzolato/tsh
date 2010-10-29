@@ -199,8 +199,10 @@ RunCmdBg(commandT* cmd)
 		for(k=0;cmd->argv[k] !=0;k++){
 			sprintf(bg_js+name_offset,"%s ",cmd->argv[k]);
 			name_offset+=strlen(cmd->argv[k]);
+			name_offset++;
 		}
-		bg_js[++name_offset] = '&';
+
+		bg_js[name_offset] = '&';
 		bg_js[++name_offset] = '\0';
 		printf("%s \n",bg_js);
 		Push(pid,bg_js);
