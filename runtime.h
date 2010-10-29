@@ -69,6 +69,7 @@ typedef struct bgjob_l
 {
   pid_t pid;
   struct bgjob_l* next;
+	char* bg_js;
 } bgjobL;
 
 /* the pids of the background processes */
@@ -77,6 +78,7 @@ typedef struct Job
 {
     pid_t pid;
 		int pipes;
+		char* fg_js;
 } job;
 
 job fgjob;
