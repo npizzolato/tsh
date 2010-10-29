@@ -215,24 +215,32 @@ RunCmdBg(commandT* cmd)
 void
 RunCmdPipe(commandT* cmd1, commandT* cmd2)
 {	
-	int stat,cmd1_to_cmd2[2];	
+	int pid1,pid=18,cmd1_to_cmd2[2];	
 	pipe(cmd1_to_cmd2);
-	if(fork() == 0){
-		close(cmd1_to_cmd2[0]);
+	if((pid1=fork()) == 0){
 		close(1);				
 		dup(cmd1_to_cmd2[1]);
+		close(cmd1_to_cmd2[0]);
 		if(execv(cmd1->name,cmd1->argv)<0){
 			printf("this failed y'all\n");
 			perror("zis is ze problem:");
 		}
-	}else if(fork() == 0){
-			close(cmd1_to_cmd2[1]);
+	}else if( (pid=fork()) == 0){
 			close(0);
 			dup(cmd1_to_cmd2[0]);
+			close(cmd1_to_cmd2[1]);
 			if(execv(cmd2->name,cmd2->argv)<0){
 				printf("this failed y'all\n");
 				perror("zis is ze problem:");
 			}
+	}else{
+			close(cmd1_to_cmd2[0]);
+			close(cmd1_to_cmd2[1]);
+      fgjob.pid = pid;
+      fgrun = pid;
+      while (fgrun == fgjob.pid) {
+          sleep(1);
+      }
 	}
 } /* RunCmdPipe */
 

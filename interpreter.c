@@ -242,7 +242,7 @@ Interpret(char* cmdLine, char* path_list)
 			printf("%s: command not found\n",cmd->argv[0]);
 		}
 	 }else{
-  		commandT* cmd2 = malloc(sizeof(commandT) + sizeof(char*) * MAXARGS);
+  		commandT* cmd2 = calloc(1,sizeof(commandT) + sizeof(char*) * MAXARGS);
   		cmd2->argv[0] = 0;
   		cmd2->name = 0;
   		cmd2->argc = 0;
@@ -253,10 +253,11 @@ Interpret(char* cmdLine, char* path_list)
 			if(cmd2->name != NULL){
 				int j,p=to_pipe+1;
 				for(j=0;cmd->argv[p]!=0 || cmd->argv[p]!=NULL;j++){
-					cmd2->argv[j] = malloc(2+strlen(cmd->argv[p]));		
+					//cmd2->argv[j] = malloc(2+strlen(cmd->argv[p]));		
 					cmd2->argc++;
+					cmd2->argv[j] = cmd->argv[p];
 					strcpy( cmd2->argv[j], cmd->argv[p]);	
-					free(cmd->argv[p]);
+					//free(cmd->argv[p]);
 					cmd->argv[p] = 0;
 					p++;
 				}
