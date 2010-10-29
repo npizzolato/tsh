@@ -202,6 +202,9 @@ CheckJobs();
 EXTERN void
 Push();
 
+EXTERN void
+RemoveBgProcess(pid_t);
+
 int IsBuiltIn(char*);
 void RunBuiltInCmd(commandT*);
 /************External Declaration*****************************************/

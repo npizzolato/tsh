@@ -339,6 +339,35 @@ void Push(bgjobL* bgjobs, pid_t pid)
 }
 
 
+void RemoveBgProcess(pid_t pid)
+{
+    if (!bgjobs)
+        perror("No background processes.");
+    if (bgjobs->next == NULL) {
+        if (bgjobs->pid == pid) {
+            free(bgjobs);
+            bgjobs = NULL;
+        }
+        else
+            perror("Not a BG Process.");
+    }
+    else {
+        bgjobL* prev = bgjobs;
+        bgjobL* jobs = bgjobs->next;
+        while (jobs != NULL) {
+            if (jobs->pid == pid) {
+                prev->next = jobs->next;
+                free(jobs);
+            }
+            else {
+                jobs = jobs->next;
+                prev = prev->next;
+            }
+        }
+    }
+    perror("Not a BG Process.");
+}
+
 /*
  * IsBuiltIn
  *

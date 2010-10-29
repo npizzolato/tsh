@@ -123,15 +123,18 @@ sig(int signo)
     if (signo == SIGTSTP) {
         if (fgjob.pid) {
             printf("sending SIGTSTP to %d.\n", fgjob.pid);
-            kill(fgjob.pid, signo);
             Push(bgjobs, fgjob.pid);
+            kill(fgjob.pid, signo);
             fgjob.pid = 0;
         }
     }
     if (signo == SIGCHLD) {
-        pid_t child = waitpid(-1, NULL, 0);
+        pid_t child = waitpid(-1, NULL, WUNTRACED|WNOHANG);
         if (child == fgjob.pid) {
             fgrun = 0;
+        }
+        else {
+            RemoveBgProcess(child);
         }
     }
 
