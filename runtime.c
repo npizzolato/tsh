@@ -193,7 +193,18 @@ RunCmdBg(commandT* cmd)
 {
 	pid_t pid;
 	if( (pid=fork())){
-			Push(pid);
+		char* bg_js = malloc(512);
+		int name_offset = 0;
+		int k = 0;
+		for(k=0;cmd->argv[k] !=0;k++){
+			sprintf(bg_js+name_offset,"%s ",cmd->argv[k]);
+			name_offset+=strlen(cmd->argv[k]);
+		}
+		name_offset++;
+		bg_js[name_offset] = '\0';
+		printf("%s \n",bg_js);
+		Push(pid);
+
 	}else{
 		if(execv(cmd->name,cmd->argv)<0){
 			printf("this failed y'all\n");
@@ -337,14 +348,16 @@ Exec(commandT* cmd, bool forceFork)
 {
 } /* Exec */
 
-void Push(pid_t pid)
+void Push(pid_t pid,char* js)
 {
     bgjobL* newjob = malloc(sizeof(bgjobL));
     newjob->next = bgjobs;
     newjob->pid = pid;
+		newjob->bg_js = js;
 }
 
 void Pop(bgjobL* popped_job){
+//whatever runs Pop must free bgjobL
 	if(bgjobs == NULL){
 		popped_job = NULL;
 	}else{
