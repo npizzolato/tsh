@@ -376,8 +376,8 @@ void RemoveBgProcess(pid_t pid)
 				return;
 		}
     if (bgjobs->next == NULL) {
-				printf("bgjobs->pid: %d",bgjobs->pid);
         if (bgjobs->pid == pid) {
+						printf("freeing bgjobs->bg_js %s\n",bgjobs->bg_js);
             free(bgjobs);
             bgjobs = NULL;
         }
@@ -390,6 +390,7 @@ void RemoveBgProcess(pid_t pid)
         while (jobs != NULL) {
             if (jobs->pid == pid) {
                 prev->next = jobs->next;
+								printf("freeing jobs->bg_js %s\n",jobs->bg_js);
                 free(jobs);
             }
             else {
@@ -398,7 +399,6 @@ void RemoveBgProcess(pid_t pid)
             }
         }
     }
-    perror("Not a BG Process.");
 }
 
 /*

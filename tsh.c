@@ -124,7 +124,8 @@ sig(int signo)
     if (signo == SIGTSTP) {
         if (fgjob.pid) {
             printf("sending SIGTSTP to %d.\n", fgjob.pid);
-            Push(fgjob.pid);
+						//char* 	
+            //Push(fgjob.pid,);
             kill(fgjob.pid, signo);
         //    fgjob.pid = 0;
         }
