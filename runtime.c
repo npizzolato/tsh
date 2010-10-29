@@ -72,6 +72,9 @@
 
 bgjobL* bgjobs = NULL;
 int fgrun = 0;
+int gbg_num = 1;
+char* donebuf[10];
+int donei = 0;
 
 /************Function Prototypes******************************************/
 /* run command */
@@ -329,6 +332,17 @@ ResolveExternalCmd(commandT* cmd)
 } /* ResolveExternalCmd */
 
 
+
+void print_status(bgjobL* b){
+
+	if(b->stopped){
+		printf("[%d]\tStopped\t\t\t\t%s\n",b->bg_num,b->bg_js);
+	}else{
+		printf("[%d]\tRunning\t\t\t\t%s\n",b->bg_num,b->bg_js);
+	}
+
+}
+
 /*
  * Exec
  *
@@ -352,6 +366,8 @@ void Push(pid_t pid,char* js,int s)
     newjob->pid = pid;
 		newjob->bg_js = js;
 		newjob->stopped = s;
+		newjob->bg_num = gbg_num;
+		gbg_num++;
 		bgjobs = newjob;
 }
 
@@ -375,10 +391,12 @@ void RemoveBgProcess(pid_t pid)
 		}
     if (bgjobs->next == NULL) {
         if (bgjobs->pid == pid) {
-						printf("freeing bgjobs->bg_js %s\n",bgjobs->bg_js);
+						donebuf[donei] = malloc(512);
+						sprintf(donebuf[donei++],"[%d]\tDone\t\t\t\t%s\n",bgjobs->bg_num,bgjobs->bg_js);
 						free(bgjobs->bg_js);
             free(bgjobs);
             bgjobs = NULL;
+						gbg_num--;
         }
         else
             perror("Not a BG Process.");
@@ -388,9 +406,11 @@ void RemoveBgProcess(pid_t pid)
         bgjobL* jobs = bgjobs->next;
         while (jobs != NULL) {
             if (jobs->pid == pid) {
+								printf("[%d]\tDone\t\t\t\t%s\n",bgjobs->bg_num,bgjobs->bg_js);
                 prev->next = jobs->next;
 								free(jobs->bg_js);
                 free(jobs);
+								gbg_num--;
             }
             else {
                 jobs = jobs->next;
@@ -436,7 +456,9 @@ void
 RunBuiltInCmd(commandT* cmd)
 {
 	if(strcmp("cd",cmd->argv[0]) == 0){
-			if(chdir(cmd->argv[1]) < 0){
+			if(cmd->argc == 1){
+					chdir(getenv("HOME"));
+			}else if(chdir(cmd->argv[1]) < 0){
 				perror("cd error");	
 			}
 	}else if (strcmp("bg", cmd->argv[0]) == 0) {
@@ -456,13 +478,31 @@ RunBuiltInCmd(commandT* cmd)
    }else if(strcmp("jobs",cmd->argv[0]) == 0){
 
 	 		bgjobL* tmp = bgjobs;
+			char* charz[10];
+			int countz = 0;
 			while(tmp){
-				printf("jobs: %s",tmp->bg_js);
+				charz[countz] = malloc(512);	
+			if(tmp->stopped){
+				sprintf(charz[countz],"[%d]\tStopped\t\t\t\t%s\n",tmp->bg_num,tmp->bg_js);
+			}else{
+				sprintf(charz[countz],"[%d]\tRunning\t\t\t\t%s\n",tmp->bg_num,tmp->bg_js);
+			}
+				/*
+				printf("jobs: %s,num# %d",tmp->bg_js,tmp->bg_num);
 				if(tmp->stopped){
 					printf("stopped");
 				}
 				printf("\n");
+				*/
+				
 				tmp = tmp->next;
+				countz++;
+			}
+			countz--;
+			int iz;
+			for(iz=countz;iz>=0;iz--){
+				printf("%s",charz[countz]);
+
 			}
 
 	 }
@@ -507,6 +547,12 @@ void RunFg(bgjobL* job)
 void
 CheckJobs()
 {
+	int i;
+	for (i = 0; i < donei; i++) {
+		printf("%s", donebuf[i]);
+		free(donebuf[i]);
+		}
+		donei = 0;
 } /* CheckJobs */
 
 bgjobL* GetJob(int jid)

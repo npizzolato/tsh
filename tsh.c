@@ -79,11 +79,10 @@ main(int argc, char *argv[])
     {
       /* read command line */
 
-			printf("tsh> ");
+			//printf("tsh> ");
       getCommandLine(&cmdLine, BUFSIZE);
 
       /* checks the status of background jobs */
-      CheckJobs();
 
       /* interpret command and line
        * includes executing of commands */
@@ -91,6 +90,7 @@ main(int argc, char *argv[])
       if(strcmp(cmdLine, "exit") == 0){
         forceExit = TRUE;
 	    }else{
+      	CheckJobs();
       	Interpret(cmdLine,path_list);
 			}
 		}
@@ -122,7 +122,6 @@ sig(int signo)
     }
     if (signo == SIGTSTP) {
         if (fgjob.pid) {
-            printf("sending SIGTSTP to %d.\n", fgjob.pid);
 						char* tmp = malloc(512); 	
 						strcpy(tmp,fgjob.fg_js);
             Push(fgjob.pid,tmp,1);
