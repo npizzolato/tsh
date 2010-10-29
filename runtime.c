@@ -442,7 +442,7 @@ RunBuiltInCmd(commandT* cmd)
 				perror("cd error");	
 			}
 	}
-    if (strcmp("bg", cmd->argv[0]) == 0) {
+    else if (strcmp("bg", cmd->argv[0]) == 0) {
         if (cmd->argc == 1) {
             if (bgjobs)
                 kill(bgjobs->pid, SIGCONT);
@@ -450,15 +450,40 @@ RunBuiltInCmd(commandT* cmd)
         else {
             int id = atoi(cmd->argv[1]);
             if (id < 20) {
-                kill(GetPid(id), SIGCONT);
+                kill((GetJob(id)->pid), SIGCONT);
             }
             else {
                 kill(id, SIGCONT);
             }
         }
     }
+    else if (strcmp("fg", cmd->argv[0]) == 0) {
+        if (cmd->argc == 1) {
+            if (bgjobs) 
+                RunFg(bgjobs);
+        }
+        else {
+            int id = atoi(cmd->argv[1]);
+            if (id < 20) {
+                RunFg(GetJob(id));
+            }
+            else {
+                RunFg(JobFromPid(id));
+            }
+        }
+    }
 } /* RunBuiltInCmd */
 
+void RunFg(bgjobL* job)
+{
+    fgjob.pid = job->pid;
+    strcpy(fgjob.fg_js, job->bg_js);
+    fgrun = fgjob.pid;
+    kill(job->pid, SIGCONT);
+    while (fgrun) {
+        sleep(1);
+    }
+}
 
 /*
  * CheckJobs
@@ -474,7 +499,7 @@ CheckJobs()
 {
 } /* CheckJobs */
 
-pid_t GetPid(int jid)
+bgjobL* GetJob(int jid)
 {
     bgjobL* list = bgjobs;
     if (jid < 1) {
@@ -491,6 +516,20 @@ pid_t GetPid(int jid)
             exit(-1);
         }
     }
-    return list->pid;
+    return list;
 }
 
+bgjobL* JobFromPid(pid_t pid)
+{
+    bgjobL* list = bgjobs;
+    while (list != NULL) {
+        if (list->pid == pid) {
+            return list;
+        }
+        else {
+            list = list->next;
+        }
+    }
+    perror("Invalid pid.");
+    exit(-1);
+}
