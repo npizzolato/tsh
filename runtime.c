@@ -149,13 +149,10 @@ RunCmdFork(commandT* cmd, bool to_fork)
 					name_offset++;
 				}
 				fgjob.fg_js[name_offset] = '\0';
-				printf("%s \n",fgjob.fg_js);
-        printf("fgpid = %d\n", fgjob.pid);
         sigprocmask(SIG_UNBLOCK, &sigset, NULL);
 		while (fgrun == fgjob.pid) {
        		sleep(1);
      	}
-    printf("fgpid = %d\n", fgjob.pid);
 	}else{
 		if(readin){
 			int f = open(cmd->argv[readin+1],O_CREAT|O_RDWR,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
@@ -203,7 +200,7 @@ RunCmdBg(commandT* cmd)
 		}
 		bg_js[name_offset] = '&';
 		bg_js[++name_offset] = '\0';
-		Push(pid,bg_js);
+		Push(pid,bg_js,0);
 
 	}else{
 		if(execv(cmd->name,cmd->argv)<0){
@@ -348,12 +345,13 @@ Exec(commandT* cmd, bool forceFork)
 {
 } /* Exec */
 
-void Push(pid_t pid,char* js)
+void Push(pid_t pid,char* js,int s)
 {
     bgjobL* newjob = malloc(sizeof(bgjobL));
     newjob->next = bgjobs;
     newjob->pid = pid;
 		newjob->bg_js = js;
+		newjob->stopped = s;
 		bgjobs = newjob;
 }
 
@@ -441,8 +439,7 @@ RunBuiltInCmd(commandT* cmd)
 			if(chdir(cmd->argv[1]) < 0){
 				perror("cd error");	
 			}
-	}
-    if (strcmp("bg", cmd->argv[0]) == 0) {
+	}else if (strcmp("bg", cmd->argv[0]) == 0) {
         if (cmd->argc == 1) {
             if (bgjobs)
                 kill(bgjobs->pid, SIGCONT);
@@ -456,7 +453,19 @@ RunBuiltInCmd(commandT* cmd)
                 kill(id, SIGCONT);
             }
         }
-    }
+   }else if(strcmp("jobs",cmd->argv[0]) == 0){
+
+	 		bgjobL* tmp = bgjobs;
+			while(tmp){
+				printf("jobs: %s",tmp->bg_js);
+				if(tmp->stopped){
+					printf("stopped");
+				}
+				printf("\n");
+				tmp = tmp->next;
+			}
+
+	 }
 } /* RunBuiltInCmd */
 
 

@@ -81,7 +81,6 @@ main(int argc, char *argv[])
 
 			printf("tsh> ");
       getCommandLine(&cmdLine, BUFSIZE);
-      printf("passed getCommandLine\n");
 
       /* checks the status of background jobs */
       CheckJobs();
@@ -126,7 +125,7 @@ sig(int signo)
             printf("sending SIGTSTP to %d.\n", fgjob.pid);
 						char* tmp = malloc(512); 	
 						strcpy(tmp,fgjob.fg_js);
-            Push(fgjob.pid,tmp);
+            Push(fgjob.pid,tmp,1);
             kill(fgjob.pid, signo);
         //    fgjob.pid = 0;
         }
