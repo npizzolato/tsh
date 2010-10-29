@@ -78,7 +78,6 @@ main(int argc, char *argv[])
       /* read command line */
 
 			printf("tsh> ");
-            printf("at getCommandLine\n");
       getCommandLine(&cmdLine, BUFSIZE);
       printf("passed getCommandLine\n");
 
