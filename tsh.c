@@ -66,7 +66,7 @@ main(int argc, char *argv[])
 	char* path_list = getenv("PATH");
 
 	fgjob.pipes = 0;
-
+	fgjob.job_string = malloc(512);
   /* shell initialization */
   if (signal(SIGINT, sig) == SIG_ERR)
     PrintPError("SIGINT");
@@ -97,6 +97,7 @@ main(int argc, char *argv[])
 		}
   /* shell termination */
   	free(cmdLine);
+		free(fgjob.job_string);
 	
   return 0;
 } /* main */

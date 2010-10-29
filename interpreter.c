@@ -145,7 +145,7 @@ int search_single_path(char* cmd,char* path, char** return_path){
 			strcpy(full_path,cmd);
 	}
 	if(file_stat(full_path)){
-			*return_path = malloc(strlen(full_path+2));
+			*return_path = malloc(strlen(full_path)+2);
 			strcpy(*return_path,full_path);
 			
 	}
@@ -269,7 +269,7 @@ Interpret(char* cmdLine, char* path_list)
 					//cmd2->argv[j] = malloc(2+strlen(cmd->argv[p]));		
 					cmd2->argc++;
 					cmd2->argv[j] = cmd->argv[p];
-					strcpy( cmd2->argv[j], cmd->argv[p]);	
+					//strcpy( cmd2->argv[j], cmd->argv[p]);	
 					//free(cmd->argv[p]);
 					cmd->argv[p] = 0;
 					p++;
