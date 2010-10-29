@@ -145,8 +145,11 @@ int search_single_path(char* cmd,char* path, char** return_path){
 			strcpy(full_path,cmd);
 	}
 	if(file_stat(full_path)){
-			*return_path = full_path;
+			*return_path = malloc(strlen(full_path+2));
+			strcpy(*return_path,full_path);
+			
 	}
+	free(full_path);
 	return 0;
 }
 

@@ -76,6 +76,7 @@ typedef struct bgjob_l
 typedef struct Job
 {
     pid_t pid;
+		int pipes;
 } job;
 
 job fgjob;

@@ -65,6 +65,8 @@ main(int argc, char *argv[])
 	/*Get PATH variable*/
 	char* path_list = getenv("PATH");
 
+	fgjob.pipes = 0;
+
   /* shell initialization */
   if (signal(SIGINT, sig) == SIG_ERR)
     PrintPError("SIGINT");
@@ -114,9 +116,8 @@ sig(int signo)
 {
     if (signo == SIGINT) {
         if (fgjob.pid) {
-            printf("sending SIGINT to %d.\n", fgjob.pid);
+           // printf("sending SIGINT to %d.\n", fgjob.pid);
             kill(-fgjob.pid, signo);
-            fgjob.pid = 0;
         }
     }
     if (signo == SIGTSTP) {
@@ -124,13 +125,17 @@ sig(int signo)
             printf("sending SIGTSTP to %d.\n", fgjob.pid);
             Push(bgjobs, fgjob.pid);
             kill(fgjob.pid, signo);
-            fgjob.pid = 0;
+        //    fgjob.pid = 0;
         }
     }
     if (signo == SIGCHLD) {
         pid_t child = waitpid(-1, NULL, WUNTRACED|WNOHANG);
-        if (child == fgjob.pid) {
-            fgrun = 0;
+        if (child == fgjob.pid || ((fgjob.pipes) && (child+1) == fgjob.pid) ) {
+						if((child+1) == fgjob.pid){
+							fgjob.pipes = 0;
+						}else{
+            	fgrun = 0;
+						}
         }
         else {
             RemoveBgProcess(child);
