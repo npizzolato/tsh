@@ -78,7 +78,9 @@ main(int argc, char *argv[])
       /* read command line */
 
 			printf("tsh> ");
+            printf("at getCommandLine\n");
       getCommandLine(&cmdLine, BUFSIZE);
+      printf("passed getCommandLine\n");
 
       /* checks the status of background jobs */
       CheckJobs();
@@ -113,13 +115,15 @@ sig(int signo)
 {
     if (signo == SIGINT) {
         if (fgjob.pid) {
+            printf("sending SIGINT to %d.\n", fgjob.pid);
             kill(-fgjob.pid, signo);
             fgjob.pid = 0;
         }
     }
     if (signo == SIGTSTP) {
         if (fgjob.pid) {
-            kill(-fgjob.pid, signo);
+            printf("sending SIGTSTP to %d.\n", fgjob.pid);
+            kill(fgjob.pid, signo);
             Push(bgjobs, fgjob.pid);
             fgjob.pid = 0;
         }
