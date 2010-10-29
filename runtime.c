@@ -415,6 +415,20 @@ RunBuiltInCmd(commandT* cmd)
 				perror("cd error");	
 			}
 	}
+    if (strcmp("bg", cmd->argv[0]) == 0) {
+        if (cmd->argc == 1) {
+            kill(bgjobs->pid, SIGCONT);
+        }
+        else {
+            int id = cmd->argv[1];
+            if (id < 20) {
+                kill(GetPid(id), SIGCONT);
+            }
+            else {
+                kill(id, SIGCONT);
+            }
+        }
+    }
 } /* RunBuiltInCmd */
 
 
@@ -431,3 +445,22 @@ void
 CheckJobs()
 {
 } /* CheckJobs */
+
+pid_t GetPid(int jid)
+{
+    bgjobL* list = bgjobs;
+    if (jid < 1) {
+        perror("Invalid job id.");
+    }
+    while (jid != 1) {
+        if (bgjobs->next) {
+            list = bgjobs->next;
+            --jid;
+        }
+        else {
+            perror("Invalid job id.");
+        }
+    }
+    return list->pid;
+}
+
