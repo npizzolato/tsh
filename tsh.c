@@ -124,8 +124,9 @@ sig(int signo)
     if (signo == SIGTSTP) {
         if (fgjob.pid) {
             printf("sending SIGTSTP to %d.\n", fgjob.pid);
-						//char* 	
-            //Push(fgjob.pid,);
+						char* tmp = malloc(512); 	
+						strcpy(tmp,fgjob.fg_js);
+            Push(fgjob.pid,tmp);
             kill(fgjob.pid, signo);
         //    fgjob.pid = 0;
         }

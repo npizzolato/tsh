@@ -201,7 +201,6 @@ RunCmdBg(commandT* cmd)
 			name_offset+=strlen(cmd->argv[k]);
 			name_offset++;
 		}
-
 		bg_js[name_offset] = '&';
 		bg_js[++name_offset] = '\0';
 		Push(pid,bg_js);
@@ -379,6 +378,7 @@ void RemoveBgProcess(pid_t pid)
     if (bgjobs->next == NULL) {
         if (bgjobs->pid == pid) {
 						printf("freeing bgjobs->bg_js %s\n",bgjobs->bg_js);
+						free(bgjobs->bg_js);
             free(bgjobs);
             bgjobs = NULL;
         }
@@ -391,7 +391,7 @@ void RemoveBgProcess(pid_t pid)
         while (jobs != NULL) {
             if (jobs->pid == pid) {
                 prev->next = jobs->next;
-								printf("freeing jobs->bg_js %s\n",jobs->bg_js);
+								free(jobs->bg_js);
                 free(jobs);
             }
             else {
