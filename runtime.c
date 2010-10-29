@@ -199,11 +199,12 @@ RunCmdBg(commandT* cmd)
 		for(k=0;cmd->argv[k] !=0;k++){
 			sprintf(bg_js+name_offset,"%s ",cmd->argv[k]);
 			name_offset+=strlen(cmd->argv[k]);
+			name_offset++;
 		}
-		name_offset++;
-		bg_js[name_offset] = '\0';
-		printf("%s \n",bg_js);
-		Push(pid);
+
+		bg_js[name_offset] = '&';
+		bg_js[++name_offset] = '\0';
+		Push(pid,bg_js);
 
 	}else{
 		if(execv(cmd->name,cmd->argv)<0){
@@ -355,7 +356,6 @@ void Push(pid_t pid,char* js)
     newjob->pid = pid;
 		newjob->bg_js = js;
 		bgjobs = newjob;
-		printf("*****pushing now\n");
 }
 
 void Pop(bgjobL* popped_job){
@@ -377,8 +377,8 @@ void RemoveBgProcess(pid_t pid)
 				return;
 		}
     if (bgjobs->next == NULL) {
-				printf("bgjobs->pid: %d",bgjobs->pid);
         if (bgjobs->pid == pid) {
+						printf("freeing bgjobs->bg_js %s\n",bgjobs->bg_js);
             free(bgjobs);
             bgjobs = NULL;
         }
@@ -391,6 +391,7 @@ void RemoveBgProcess(pid_t pid)
         while (jobs != NULL) {
             if (jobs->pid == pid) {
                 prev->next = jobs->next;
+								printf("freeing jobs->bg_js %s\n",jobs->bg_js);
                 free(jobs);
             }
             else {
@@ -399,7 +400,6 @@ void RemoveBgProcess(pid_t pid)
             }
         }
     }
-    perror("Not a BG Process.");
 }
 
 /*
